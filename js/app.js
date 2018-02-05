@@ -11,7 +11,9 @@ var radius = canvas.width * 10 / 960;
 var cue = {
   x: (canvas.width / 4),
   y: (canvas.width / 4),
-  color: '#FFFFFF'
+  color: '#FFFFFF',
+  dx: 2,
+  dy: 1
 };
 
 var ball = {
@@ -41,81 +43,97 @@ var drawBalls = function() {
 //Cue Ball
 ctx.beginPath();
 ctx.arc(cue.x, cue.y, radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = cue.color
 ctx.fill();
 //Ball 1
 ctx.beginPath();
 ctx.arc(ball.x, ball.y, radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 2
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 2)), (ball.y + radius), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 3
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 2)), (ball.y - radius), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 4
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 4)), (ball.y + (radius * 2)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 5 (center ball)
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 4)), (ball.y), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = eBall.color;
 ctx.fill();
 //Ball 6
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 4)), (ball.y - (radius * 2)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 7
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 6)), (ball.y + (radius * 3)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 8
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 6)), (ball.y + radius), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 9
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 6)), (ball.y - radius), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 10
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 6)), (ball.y - (radius * 3)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 11
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 8)), (ball.y + (radius * 4)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 12
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 8)), (ball.y + (radius * 2)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 13
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 8)), (ball.y ), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = uncBall.color;
 ctx.fill();
 //Ball 14
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 8)), (ball.y - (radius * 2)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.fill();
 //Ball 15
 ctx.beginPath();
 ctx.arc((ball.x + (radius * 8)), (ball.y - (radius * 4)), radius, sAngle, eAngle);
+ctx.closePath();
 ctx.fillStyle = dookBall.color;
 ctx.stroke();
 ctx.fill();
@@ -141,12 +159,32 @@ var sizeCue = function() {
 
 drawBalls();
 
+var clearCanvas = function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 // Resizes billiard table and balls
 window.addEventListener('resize', function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = innerWidth / 1.5;;
+  clearCanvas();
+  canvas.width = innerWidth / 1.5;
 	canvas.height = innerWidth / 3;
   sizeBalls();
   sizeCue();
   drawBalls();
 });
+
+var draw = function() {
+  requestAnimationFrame(draw);
+  clearCanvas();
+  drawBalls();
+
+  if (cue.x + cue.dx > (canvas.width - radius) || cue.x + cue.dx - radius < 0)
+    cue.dx = -cue.dx;
+  if (cue.y + cue.dy > (canvas.height - radius) || cue.y + cue.dy - radius < 0)
+    cue.dy = -cue.dy;
+
+  cue.x += cue.dx;
+  cue.y += cue.dy;
+};
+
+draw();
