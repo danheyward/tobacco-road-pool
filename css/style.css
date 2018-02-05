@@ -1,0 +1,19 @@
+html,body {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+h1 {
+  color: blue;
+  text-align: center;
+}
+
+main {
+  display: inline-block
+}
+
+canvas {
+  background-color: #99badd;
+  /* background-image: url("https://www.transparenttextures.com/patterns/felt.png"); */
+}
