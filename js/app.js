@@ -276,94 +276,14 @@ var engine = Engine.create({ world, timing: { timeScale: 1 } });
 var render = Render.create({
   element: document.body,
   engine: engine,
+  mouse: mouse,
   options: {
-      width: 800,
-      height: 400,
+      background: '#FFFFFF',
+      width: 1000,
+      height: 600,
       wireframes: false
   }
 });
-
-// Setting up variables for constants
-var bRadius = 10,
-    bRest = 0.95,
-    bFric = 0.3,
-    bMass = 1,
-    white = '#FFFFFF',
-    green = '#00FF00',
-    blue = '#0000FF',
-    red = '#FF0000'
-
-// Ball Rack position
-var sPos = [
-  // Cue Ball, Ball 1, Ball 2
-  [200, 200], [600, 200], [620, 210],
-  // Ball 3, Ball 4, 'Eight' Ball
-  [620, 190], [640, 220], [640, 200],
-  // Ball 6, Ball 7, Ball 8
-  [640, 180], [660, 230], [660, 210],
-  // Ball 9, Ball 10, Ball 11
-  [660, 190], [660, 170], [680, 240],
-  // Ball 12, Ball 13, Ball 14
-  [680, 220], [680, 200], [680, 180],
-  // Ball 15
-  [680, 160]
-];
-
-// Ball Specs
-var cueSpec = { render: { fillStyle: white }, restitution: bRest, friction: bFric, mass: bMass };
-var uncSpec = { render: { fillStyle: green }, restitution: bRest, friction: bFric, mass: bMass };
-var dookSpec = { render: { fillStyle: blue }, restitution: bRest, friction: bFric, mass: bMass };
-var redSpec = { render: { fillStyle: red }, restitution: bRest, friction: bFric, mass: bMass };
-
-// Bumper Positions
-var bPos = [
-  // Top Bumper, Bottom Bumper
-  [400, 0, 810, 30], [400, 400, 810, 30],
-  // Left Bumper, Right Bumper
-  [0, 200, 30, 410], [800, 200, 30, 420]
-];
-
-// Bumper Specs
-var bAttr = {
-  isStatic: true,
-  restitution: 1,
-  friction: 0,
-  frictionStatic: 0,
-  mass: 15
-};
-
-// Racking Balls
-var rack = [];
-var rackBalls = function() {
-  for (var i = 0; i < sPos.length; i++) {
-    if (i === 0) {
-      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, cueSpec))
-    } else if (i === 5) {
-      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, redSpec))
-    } else if (i % 2 === 1) {
-      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, uncSpec))
-    } else {
-      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, dookSpec))
-    };
-  };
-};
-rackBalls();
-
-// Building Bumpers
-var bumps = [];
-var buildBumps = function() {
-  for (var i = 0; i < bPos.length; i++) {
-    bumps.push(Bodies.rectangle(bPos[i][0], bPos[i][1], bPos[i][2], bPos[i][3], bAttr));
-  };
-};
-buildBumps();
-
-// Add Table, Balls and Bumpers to World, start engine + rendering
-World.add(engine.world, rack);
-World.add(engine.world, bumps);
-Engine.run(engine);
-Render.run(render);
-
 
 var mouse = Mouse.create(render.canvas)
 var mouseConstraint = MouseConstraint.create(engine, {
@@ -375,8 +295,92 @@ var mouseConstraint = MouseConstraint.create(engine, {
             }
         }
     });
+
+// Setting up variables for constants
+var bRadius = 10,
+    bRest = 0.95,
+    bFric = 0.3,
+    bMass = 1,
+    white = '#F6F7EB',
+    green = '#44BBA4',
+    blue = '#3F88C5',
+    black = '#393E41',
+    orange = '#E94F37'
+
+// Ball Rack position
+var baPos = [
+  // Cue Ball, Ball 1, Ball 2
+  [300, 300], [700, 300], [720, 310],
+  // Ball 3, Ball 4, 'Eight' Ball
+  [720, 290], [740, 320], [740, 300],
+  // Ball 6, Ball 7, Ball 8
+  [740, 280], [760, 330], [760, 310],
+  // Ball 9, Ball 10, Ball 11
+  [760, 290], [760, 270], [780, 340],
+  // Ball 12, Ball 13, Ball 14
+  [780, 320], [780, 300], [780, 280],
+  // Ball 15
+  [780, 260]
+];
+
+// Ball Specs
+var cueSpec = { render: { fillStyle: orange }, restitution: bRest, friction: bFric, mass: bMass };
+var uncSpec = { render: { fillStyle: green }, restitution: bRest, friction: bFric, mass: bMass };
+var dookSpec = { render: { fillStyle: blue }, restitution: bRest, friction: bFric, mass: bMass };
+var blackSpec = { render: { fillStyle: black }, restitution: bRest, friction: bFric, mass: bMass };
+
+// Bumper Positions
+var buPos = [
+  // Top Bumper, Bottom Bumper
+  [500, 87.5, 850, 25], [500, 512.5, 850, 25],
+  // Left Bumper, Right Bumper
+  [87.5, 300, 25, 450], [912.5, 300, 25, 450]
+];
+
+// Bumper Specs
+var bAttr = {
+  isStatic: true,
+  restitution: 1,
+  friction: 0,
+  frictionStatic: 0,
+  mass: 15,
+  render: {
+    fillStyle: orange
+  }
+};
+
+// Racking Balls
+var rack = [];
+var rackBalls = function() {
+  for (var i = 0; i < baPos.length; i++) {
+    if (i === 0) {
+      rack.push(Bodies.circle(baPos[i][0], baPos[i][1], bRadius, cueSpec))
+    } else if (i === 5) {
+      rack.push(Bodies.circle(baPos[i][0], baPos[i][1], bRadius, blackSpec))
+    } else if (i % 2 === 1) {
+      rack.push(Bodies.circle(baPos[i][0], baPos[i][1], bRadius, uncSpec))
+    } else {
+      rack.push(Bodies.circle(baPos[i][0], baPos[i][1], bRadius, dookSpec))
+    };
+  };
+};
+rackBalls();
+
+// Building Bumpers
+var bumpers = [];
+var buildBumpers = function() {
+  for (var i = 0; i < buPos.length; i++) {
+    bumpers.push(Bodies.rectangle(buPos[i][0], buPos[i][1], buPos[i][2], buPos[i][3], bAttr));
+  };
+};
+buildBumpers();
+
+// Add Table, Balls and Bumpers to World, start engine + rendering
+World.add(engine.world, rack);
+World.add(engine.world, bumpers);
 World.add(world, mouseConstraint);
-render.mouse = mouse;
+Engine.run(engine);
+Render.run(render);
 
 
 $('.shoot').on('click', function() {
