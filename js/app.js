@@ -267,7 +267,9 @@ var Engine = Matter.Engine,
     Render = Matter.Render,
     World = Matter.World,
     Body = Matter.Body,
-    Bodies = Matter.Bodies;
+    Bodies = Matter.Bodies,
+    MouseConstraint = Matter.MouseConstraint,
+    Mouse = Matter.Mouse;
 
 var world = World.create({ gravity: { x: 0, y: 0 } });
 var engine = Engine.create({ world, timing: { timeScale: 1 } });
@@ -281,51 +283,84 @@ var render = Render.create({
                 }
              });
 
-var cueColor = { render: { fillStyle: '#FFFFFF' } };
-var uncColor = { render: { fillStyle: '#99BADD' } };
-var dookColor = { render: { fillStyle: '#00009C' } };
-var eightColor = { render: { fillStyle: '#FF0000' } };
+var bRadius = 10,
+    bRest = 0.95,
+    bFric = 0.3,
+    white = '#FFFFFF',
+    green = '#00FF00',
+    blue = '#0000FF',
+    red = '#FF0000'
 
+var sPos = [
+  // Cue Ball, Ball 1, Ball 2
+  [200, 200], [600, 200], [620, 210],
+  // Ball 3, Ball 4, 'Eight' Ball
+  [620, 190], [640, 220], [640, 200],
+  // Ball 6, Ball 7, Ball 8
+  [640, 180], [660, 230], [660, 210],
+  // Ball 9, Ball 10, Ball 11
+  [660, 190], [660, 170], [680, 240],
+  // Ball 12, Ball 13, Ball 14
+  [680, 220], [680, 200], [680, 180],
+  // Ball 15
+  [680, 160]
+];
 
-var topWall = Bodies.rectangle(400, 0, 810, 30, { isStatic: true });
-var leftWall = Bodies.rectangle(0, 200, 30, 420, { isStatic: true });
-var bottomWall = Bodies.rectangle(400, 400, 810, 30, { isStatic: true });
-var rightWall = Bodies.rectangle(800, 200, 30, 420, { isStatic: true});
-var cue = Bodies.circle(200, 200, 10, cueColor);
-var ball1 = Bodies.circle(600, 200, 10, uncColor);
-var ball2 = Bodies.circle(620, 210, 10, uncColor);
-var ball3 = Bodies.circle(620, 190, 10, dookColor);
-var ball4 = Bodies.circle(640, 220, 10, dookColor);
-var ball5 = Bodies.circle(640, 200, 10, eightColor);
-var ball6 = Bodies.circle(640, 180, 10, uncColor);
-var ball7 = Bodies.circle(660, 230, 10, uncColor);
-var ball8 = Bodies.circle(660, 210, 10, dookColor);
-var ball9 = Bodies.circle(660, 190, 10, uncColor);
-var ball10 = Bodies.circle(660, 170, 10, dookColor);
-var ball11 = Bodies.circle(680, 240, 10, uncColor);
-var ball12 = Bodies.circle(680, 220, 10, dookColor);
-var ball13 = Bodies.circle(680, 200, 10, uncColor);
-var ball14 = Bodies.circle(680, 180, 10, dookColor);
-var ball15 = Bodies.circle(680, 160, 10, dookColor);
+var cueSpec = { render: { fillStyle: white }, restitution: bRest, friction: bFric, mass: 1 };
+var uncSpec = { render: { fillStyle: green }, restitution: bRest, friction: bFric, mass: 1 };
+var dookSpec = { render: { fillStyle: blue }, restitution: bRest, friction: bFric, mass: 1 };
+var redSpec = { render: { fillStyle: red }, restitution: bRest, friction: bFric, mass: 1 };
 
-World.add(engine.world,
-  [
-    cue, ball1, ball2, ball3, ball4,
-    ball5, ball6, ball7, ball8, ball9,
-    ball10, ball11, ball12, ball13,
-    ball14, ball15, topWall, leftWall,
-    bottomWall, rightWall
-  ]);
+var rack = [];
+
+var createBalls = function() {
+  for (var i = 0; i < sPos.length; i++) {
+    if (i === 0) {
+      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, cueSpec))
+    } else if (i === 5) {
+      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, redSpec))
+    } else if (i % 2 === 1) {
+      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, uncSpec))
+    } else {
+      rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, dookSpec))
+    };
+  };
+};
+
+createBalls();
+
+var topWall = Bodies.rectangle(400, 0, 810, 30, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
+var leftWall = Bodies.rectangle(0, 200, 30, 420, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
+var bottomWall = Bodies.rectangle(400, 400, 810, 30, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
+var rightWall = Bodies.rectangle(800, 200, 30, 420, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15});
+
+World.add(engine.world, rack);
+World.add(engine.world, [topWall, leftWall, bottomWall, rightWall]);
 
 Engine.run(engine);
 Render.run(render);
 
+
+var mouse = Mouse.create(render.canvas)
+var mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse,
+        constraint: {
+            stiffness: 0.2,
+            render: {
+                visible: false
+            }
+        }
+    });
+World.add(world, mouseConstraint);
+render.mouse = mouse;
+
+
 $('.shoot').on('click', function() {
-  Body.applyForce(cue, {
-    x: cue.position.x,
-    y: cue.position.y
+  Body.applyForce(rack[0], {
+    x: rack[0].position.x,
+    y: rack[0].position.y
   }, {
     x: 0.02,
     y: 0
-  });
+  })
 });
