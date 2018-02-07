@@ -3,11 +3,13 @@ html,body {
   margin: 0;
   text-align: center;
   background: #FFFFFF;
+  font-family: 'Poiret One', cursive;
 }
 
 h1 {
-  color: blue;
+  color: #E94F37;
   text-align: center;
+  font-size: 60px;
 }
 
 main {
