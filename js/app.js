@@ -262,7 +262,7 @@
 // };
 //
 // draw();
-
+// Setting up variable names for Matter.JS systems + creating world
 var Engine = Matter.Engine,
     Render = Matter.Render,
     World = Matter.World,
@@ -274,23 +274,26 @@ var Engine = Matter.Engine,
 var world = World.create({ gravity: { x: 0, y: 0 } });
 var engine = Engine.create({ world, timing: { timeScale: 1 } });
 var render = Render.create({
-                element: document.body,
-                engine: engine,
-                options: {
-                    width: 800,
-                    height: 400,
-                    wireframes: false
-                }
-             });
+  element: document.body,
+  engine: engine,
+  options: {
+      width: 800,
+      height: 400,
+      wireframes: false
+  }
+});
 
+// Setting up variables for constants
 var bRadius = 10,
     bRest = 0.95,
     bFric = 0.3,
+    bMass = 1,
     white = '#FFFFFF',
     green = '#00FF00',
     blue = '#0000FF',
     red = '#FF0000'
 
+// Ball Rack position
 var sPos = [
   // Cue Ball, Ball 1, Ball 2
   [200, 200], [600, 200], [620, 210],
@@ -306,14 +309,32 @@ var sPos = [
   [680, 160]
 ];
 
-var cueSpec = { render: { fillStyle: white }, restitution: bRest, friction: bFric, mass: 1 };
-var uncSpec = { render: { fillStyle: green }, restitution: bRest, friction: bFric, mass: 1 };
-var dookSpec = { render: { fillStyle: blue }, restitution: bRest, friction: bFric, mass: 1 };
-var redSpec = { render: { fillStyle: red }, restitution: bRest, friction: bFric, mass: 1 };
+// Ball Specs
+var cueSpec = { render: { fillStyle: white }, restitution: bRest, friction: bFric, mass: bMass };
+var uncSpec = { render: { fillStyle: green }, restitution: bRest, friction: bFric, mass: bMass };
+var dookSpec = { render: { fillStyle: blue }, restitution: bRest, friction: bFric, mass: bMass };
+var redSpec = { render: { fillStyle: red }, restitution: bRest, friction: bFric, mass: bMass };
 
+// Bumper Positions
+var bPos = [
+  // Top Bumper, Bottom Bumper
+  [400, 0, 810, 30], [400, 400, 810, 30],
+  // Left Bumper, Right Bumper
+  [0, 200, 30, 410], [800, 200, 30, 420]
+];
+
+// Bumper Specs
+var bAttr = {
+  isStatic: true,
+  restitution: 1,
+  friction: 0,
+  frictionStatic: 0,
+  mass: 15
+};
+
+// Racking Balls
 var rack = [];
-
-var createBalls = function() {
+var rackBalls = function() {
   for (var i = 0; i < sPos.length; i++) {
     if (i === 0) {
       rack.push(Bodies.circle(sPos[i][0], sPos[i][1], bRadius, cueSpec))
@@ -326,17 +347,20 @@ var createBalls = function() {
     };
   };
 };
+rackBalls();
 
-createBalls();
+// Building Bumpers
+var bumps = [];
+var buildBumps = function() {
+  for (var i = 0; i < bPos.length; i++) {
+    bumps.push(Bodies.rectangle(bPos[i][0], bPos[i][1], bPos[i][2], bPos[i][3], bAttr));
+  };
+};
+buildBumps();
 
-var topWall = Bodies.rectangle(400, 0, 810, 30, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
-var leftWall = Bodies.rectangle(0, 200, 30, 420, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
-var bottomWall = Bodies.rectangle(400, 400, 810, 30, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15 });
-var rightWall = Bodies.rectangle(800, 200, 30, 420, { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0, mass: 15});
-
+// Add Table, Balls and Bumpers to World, start engine + rendering
 World.add(engine.world, rack);
-World.add(engine.world, [topWall, leftWall, bottomWall, rightWall]);
-
+World.add(engine.world, bumps);
 Engine.run(engine);
 Render.run(render);
 
