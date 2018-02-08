@@ -27,20 +27,23 @@ var render = Render.create({
 var mouse = Mouse.create(render.canvas)
 var mouseConstraint = MouseConstraint.create(engine, {
   mouse: mouse,
+  collisionFilter: {
+    mask: 32
+  },
   constraint: {
-      stiffness: 0.2,
-      render: {
-          visible: false
-      }
+    stiffness: 1,
+    render: {
+        visible: false
     }
+  }
 });
 
 // Setting up variables for constants
 var bRadius = 10,
-    pRadius = 25,
+    pRadius = 20,
     bRest = 0.95,
     bFric = 0.001,
-    bMass = 1,
+    bDensity = 1,
     white = '#F6F7EB',
     green = '#44BBA4',
     blue = '#3F88C5',
@@ -64,14 +67,14 @@ var baPos = [
 ];
 
 // Ball Specs
-var cueAttr = { id: 'cBall', render: { fillStyle: orange },
-                restitution: bRest, friction: bFric, mass: bMass, slop: 0.001 };
-var blueAttr = { id: 'blue', render: { fillStyle: blue },
-                 restitution: bRest, friction: bFric, mass: bMass, slop: 0.001};
-var greenAttr = { id: 'green', render: { fillStyle: green },
-                  restitution: bRest, friction: bFric, mass: bMass, slop: 0.001 };
-var eAttr = { id: 'eBall', render: { fillStyle: black },
-                  restitution: bRest, friction: bFric, mass: bMass, slop: 0.001};
+var cueAttr = { id: 'cBall', label: 'ball', collisionFilter: { category: 32 }, render: { fillStyle: orange },
+                restitution: bRest, friction: bFric, density: bDensity};
+var blueAttr = { id: 'blue', label: 'ball', render: { fillStyle: blue },
+                 restitution: bRest, friction: bFric, density: bDensity};
+var greenAttr = { id: 'green', label: 'ball', render: { fillStyle: green },
+                  restitution: bRest, friction: bFric, density: bDensity};
+var eAttr = { id: 'eBall', label: 'ball', render: { fillStyle: black },
+                  restitution: bRest, friction: bFric, density: bDensity};
 
 // Racking Balls
 var rack = [];
@@ -106,7 +109,7 @@ var bAttr = {
   isStatic: true,
   restitution: .999,
   frictionStatic: 0.001,
-  mass: 15,
+  density: 1,
   render: {
     fillStyle: orange
   }
@@ -131,6 +134,7 @@ var poPos = [
 var pAttr = {
   isStatic: true,
   isSensor: true,
+  label: 'pocket',
   render: {
     fillStyle: 'black'
   }
@@ -154,3 +158,18 @@ Engine.run(engine);
 Render.run(render);
 };
 gameSetup();
+
+var player1 = {
+  isTurn: true,
+  isGreen: false,
+  isBlue: false,
+  hasWon: false,
+  scratched: false,
+}
+var player2 = {
+  isTurn: false,
+  isGreen: false,
+  isBlue: false,
+  hasWon: false,
+  scratched: false,
+}
